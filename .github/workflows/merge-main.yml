@@ -174,7 +174,7 @@ jobs:
                     {
                       "title": "deploy result",
                       "short": true,
-                      "value": "${{ needs.docker-build.outputs.deploy_status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                      "value": "${{ needs.deploy-aws.outputs.deploy_status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
                     }
                   ]
                 }

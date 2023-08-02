@@ -80,6 +80,7 @@ jobs:
           docker build --tag meu-site-nginx:latest aws-rds/frontend/
           docker tag meu-site-nginx:latest henriquelr/meu-site-nginx:latest 
           docker tag meu-site-nginx:latest henriquelr/meu-site-nginx:${{ env.SHORT_SHA }}
+          
   deploy-aws:
     needs: [test, docker-build]
     outputs: 
@@ -110,8 +111,8 @@ jobs:
           user_data=$(cat aws-rds/infrastructure/scripts-front.sh | base64 -w 0)
           aws ec2 create-launch-template-version --launch-template-id lt-025e6a5928fe67c29 \
             --source-version 1 --launch-template-data "UserData=${user_data}"
-          aws autoscaling start-instance-refresh \
-            --auto-scaling-group-name site-web1
+        # aws autoscaling start-instance-refresh \
+        #   --auto-scaling-group-name site-web1
 
       - name: Create launch template version and start instance refresh backend
         if: steps.filter.outputs.backend == 'true'
@@ -169,7 +170,7 @@ jobs:
                     {
                       "title": "deploy result",
                       "short": true,
-                      "value": "${{ needs.docker-build.outputs.deploy_status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                      "value": "${{ needs.deploy-aws.outputs.deploy_status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
                     }
                   ]
                 }
