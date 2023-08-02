@@ -146,7 +146,7 @@ jobs:
           echo "COLOR=FF0000" >> $GITHUB_ENV
       
       - name: Getting status jobs
-        if: ${{ needs.docker-build.outputs.build_status == 'success' && needs.test.outputs.test_status == 'success' }}
+        if: ${{ needs.docker-build.outputs.build_status == 'success' && needs.test.outputs.test_status == 'success' && needs.deploy-aws.outputs.deploy_status == 'success' }}
         run: |
           echo "JOBS_STATUS=success" >> $GITHUB_ENV
           echo "COLOR=28a745" >> $GITHUB_ENV
