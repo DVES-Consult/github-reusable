@@ -99,6 +99,8 @@ jobs:
     if: ${{ needs.docker-build.outputs.build_status == 'success' && needs.test.outputs.test_status == 'success' }}
     runs-on: ubuntu-latest
     steps: 
+      - name: Checkout code
+        uses: actions/checkout@v2
       - uses: dorny/paths-filter@v2
         id: filter
         with:
