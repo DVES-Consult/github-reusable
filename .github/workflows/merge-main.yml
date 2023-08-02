@@ -120,18 +120,24 @@ jobs:
       - name: Create launch template version and start instance refresh frontend
         if: steps.filter.outputs.frontend == 'true'
         run: |
+          echo "Getting user data"
           user_data=$(cat aws-rds/infrastructure/scripts-front.sh | base64 -w 0)
+          echo "Creating launch template version"
           aws ec2 create-launch-template-version --launch-template-id lt-025e6a5928fe67c29 \
-            --source-version 1 --launch-template-data "UserData=${user_data}"
+            --source-version 1 --launch-template-data "UserData=${user_data}"  &> /dev/null 
+          echo "Starting instance update"
           aws autoscaling start-instance-refresh \
             --auto-scaling-group-name site-web1
 
       - name: Create launch template version and start instance refresh backend
         if: steps.filter.outputs.backend == 'true'
         run: |
+          echo "Getting user data"
           user_data=$(cat aws-rds/infrastructure/scripts-back.sh | base64 -w 0)
+          echo "Creating launch template version"
           aws ec2 create-launch-template-version --launch-template-id lt-0b3cbaaa5a6fe3ba1 \
-            --source-version 1 --launch-template-data "UserData=${user_data}"
+            --source-version 1 --launch-template-data "UserData=${user_data}"  &> /dev/null 
+          echo "Starting instance update"
           aws autoscaling start-instance-refresh \
             --auto-scaling-group-name api-enviar-email
 
