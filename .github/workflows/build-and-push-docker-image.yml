@@ -82,6 +82,9 @@ jobs:
           docker tag meu-site-nginx:latest henriquelr/meu-site-nginx:${{ env.SHORT_SHA }}
   deploy-aws:
     needs: [test, docker-build]
+    outputs: 
+      deploy_status: ${{ job.status }}
+    continue-on-error: true
     if: ${{ needs.docker-build.outputs.build_status == 'success' && needs.test.outputs.test_status == 'success' }}
     runs-on: ubuntu-latest
     steps: 
@@ -126,11 +129,11 @@ jobs:
 
 
   slack-message:
-    needs: [test, docker-build] 
+    needs: [test, docker-build, deploy-aws] 
     runs-on: ubuntu-latest
     steps: 
       - name: Getting status jobs
-        if: ${{ needs.docker-build.outputs.build_status == 'failure' || needs.test.outputs.test_status == 'failure' }}
+        if: ${{ needs.docker-build.outputs.build_status == 'failure' || needs.test.outputs.test_status == 'failure' }} 
         run: |
           echo "JOBS_STATUS=failure" >> $GITHUB_ENV
           echo "COLOR=FF0000" >> $GITHUB_ENV
@@ -159,9 +162,14 @@ jobs:
                       "value": "${{ needs.test.outputs.test_status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
                     },
                     {
-                      "title": "Build result",
+                      "title": "Build and Push result",
                       "short": true,
                       "value": "${{ needs.docker-build.outputs.build_status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                    },
+                    {
+                      "title": "deploy result",
+                      "short": true,
+                      "value": "${{ needs.docker-build.outputs.deploy_status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
                     }
                   ]
                 }
