@@ -82,23 +82,23 @@ jobs:
           docker tag meu-site-nginx:latest henriquelr/meu-site-nginx:${{ env.SHORT_SHA }}
   deploy-aws:
     runs-on: ubuntu-latest
-      steps: 
-        - name: Configure AWS Credentials
-          uses: aws-actions/configure-aws-credentials@v2
-          with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws-region: us-east-1
-        
-        - name: Create launch template version
-          run: |
-            aws ec2 create-launch-template-version --launch-template-id lt-0b3cbaaa5a6fe3ba1 \
-              --source-version 1 --launch-template-data '{"InstanceType":"t2.nano"}'
+    steps: 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      
+      - name: Create launch template version
+        run: |
+          aws ec2 create-launch-template-version --launch-template-id lt-0b3cbaaa5a6fe3ba1 \
+            --source-version 1 --launch-template-data '{"InstanceType":"t2.nano"}'
 
-        - name: Start instance refresh
-          run: |
-            aws autoscaling start-instance-refresh \
-              --auto-scaling-group-name api-enviar-email
+      - name: Start instance refresh
+        run: |
+          aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name api-enviar-email
 
 
   slack-message:
