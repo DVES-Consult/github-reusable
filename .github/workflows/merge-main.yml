@@ -7,7 +7,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     outputs: 
-      build_status: ${{ job.status }}
+      test_status: ${{ job.status }}
     continue-on-error: true
     steps:
       - name: Checkout code
@@ -138,7 +138,7 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
       - name: Getting status jobs
-        if: ${{ needs.docker-build.outputs.build_status == 'failure' || needs.test.outputs.test_status == 'failure' }} 
+        if: ${{ needs.docker-build.outputs.build_status == 'failure' || needs.test.outputs.test_status == 'failure' || needs.deploy-aws.outputs.deploy_status == 'failure' }} 
         run: |
           echo "JOBS_STATUS=failure" >> $GITHUB_ENV
           echo "COLOR=FF0000" >> $GITHUB_ENV
@@ -164,17 +164,17 @@ jobs:
                     {
                       "title": "Test result",
                       "short": true,
-                      "value": "${{ needs.test.outputs.test_status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                      "value": "${{ needs.test.outputs.test_status }}"
                     },
                     {
                       "title": "Build and Push result",
                       "short": true,
-                      "value": "${{ needs.docker-build.outputs.build_status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                      "value": "${{ needs.docker-build.outputs.build_status }}"
                     },
                     {
                       "title": "deploy result",
                       "short": true,
-                      "value": "${{ needs.deploy-aws.outputs.deploy_status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                      "value": "${{ needs.deploy-aws.outputs.deploy_status }}"
                     }
                   ]
                 }
