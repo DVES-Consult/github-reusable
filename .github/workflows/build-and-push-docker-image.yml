@@ -111,7 +111,7 @@ jobs:
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: task-definition.json
+          task-definition: ECS/task-definition.json
           container-name: site
           image: docker.io/henriquelr/meu-site-nginx:latest
 
