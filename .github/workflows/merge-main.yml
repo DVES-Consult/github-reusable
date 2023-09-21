@@ -118,18 +118,38 @@ jobs:
           aws-region: us-east-1
       
       - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
+        if: steps.filter.outputs.frontend == 'true'
+        id: task-front
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: task_definition.json
+          task-definition: ECS/task-definition.json
           container-name: site
           image: docker.io/henriquelr/meu-site-nginx:latest
 
       - name: Deploy Amazon ECS task definition
+        if: steps.filter.outputs.frontend == 'true'
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          task-definition: ${{ steps.task-front.outputs.task-definition }}
           service: site
+          cluster: teste5
+          wait-for-service-stability: true
+      
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        if: steps.filter.outputs.backend == 'true'
+        id: task-back
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ECS/task-definition.json
+          container-name: api-email
+          image: docker.io/henriquelr/dves_api:latest
+
+      - name: Deploy Amazon ECS task definition
+        if: steps.filter.outputs.backend == 'true'
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-back.outputs.task-definition }}
+          service: api-email
           cluster: teste5
           wait-for-service-stability: true
 
